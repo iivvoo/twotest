@@ -12,7 +12,7 @@ def pytest_funcarg__django_client(request):
     """
         Setup / destroy testing database
     """
-    old_name = settings.DATABASE_NAME
+    old_name = getattr(settings, 'DATABASE_NAME', 'default')
     def setup():
         setup_test_environment()
         if not hasattr(settings, 'DEBUG'):
