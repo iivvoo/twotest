@@ -20,6 +20,11 @@ class Command(BaseCommand):
             dest='paste',
             default=True,
             help='Paste result to pastebin'),
+        optparse.make_option('-f',
+            action='store_true',
+            dest='functional',
+            default=False,
+            help='Include functional tests'),
         )
 
     def handle(self, *a, **b):
@@ -35,6 +40,9 @@ class Command(BaseCommand):
             opts.append(b['keyword'])
         if not b.get('paste'):
             opts.append("--pastebin=all")
+        if not b.get('functional'):
+            opts.append("-k")
+            opts.append("-functional_")
 
         pytest.main(opts + list(a))
 
