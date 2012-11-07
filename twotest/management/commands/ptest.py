@@ -32,15 +32,19 @@ class Command(BaseCommand):
         ## --tb=native is also usable
         opts = ["--tb=short"]
 
+        keyword_specified = False
+
         settings.DATABASES = dict(default=settings.TEST_DB)
         if not b.get('capture'):
             opts.append("-s")
         if b.get('keyword') and b['keyword']:
             opts.append("-k")
             opts.append(b['keyword'])
+            keyword_specified = True
+
         if not b.get('paste'):
             opts.append("--pastebin=all")
-        if not b.get('functional'):
+        if not b.get('functional') and not keyword_specified:
             opts.append("-k")
             opts.append("-functional_")
 
