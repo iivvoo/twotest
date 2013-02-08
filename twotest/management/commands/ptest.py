@@ -25,11 +25,16 @@ class Command(BaseCommand):
             dest='functional',
             default=False,
             help='Include functional tests'),
+        optparse.make_option('-c',
+            dest='coverage',
+            default="",
+            help='Perform coverage analysis, restrict to modules'),
         )
 
     def handle(self, *a, **b):
         ## http://pytest.org/latest/usage.html
         ## --tb=native is also usable
+        coverage = False
         opts = ["--tb=short"]
 
         keyword_specified = False
@@ -48,5 +53,18 @@ class Command(BaseCommand):
             opts.append("-k")
             opts.append("-functional_")
 
+        if b.get('coverage'):
+            coverage = True
+            coverage_modules = b.get('coverage', '').split(",")
+
+        if coverage:
+            import coverage
+            conf = getattr(settings, 'COVERAGE_CONF', '')
+            cov = coverage.coverage(source=coverage_modules, config_file=conf)
+            cov.start()
         pytest.main(opts + list(a))
+        if coverage:
+            cov.stop()
+            cov.report()
+
 
