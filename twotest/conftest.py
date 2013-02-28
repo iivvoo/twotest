@@ -10,21 +10,41 @@ from django.core import mail
 
 def pytest_funcarg__django_client(request):
     """
-        Setup / destroy testing database
+        Setup / destroy testing database.
+        Additionally, set the MEDIA_ROOT to the TEST_MEDIA_ROOT and clean up
+        afterwards. This gives a cleaner fixture, and avoids testimages ending up
+        in the MEDIA_ROOT folder.
+
+        Of course we need to make sure we don't clean up a real MEDIA_ROOT. So
+        only clean up the explicit TEST_MEDIA_ROOT, and only if it's different
+        from the real MEDIA_ROOT
     """
     old_name = getattr(settings, 'DATABASE_NAME', 'default')
+
+    def test_media_root():
+        return getattr(settings, "TEST_MEDIA_ROOT", settings.MEDIA_ROOT)
+
+    def cleanup_media():
+        return getattr(settings, "CLEANUP_MEDIA", False)
+
     def setup():
         setup_test_environment()
         if not hasattr(settings, 'DEBUG'):
             settings.DEBUG = False
         from django.db import connection
         connection.creation.create_test_db(verbosity=0, autoclobber=True)
-        return Client()
+        c = Client()
+        c.orig_media_root = settings.MEDIA_ROOT
+        settings.MEDIA_ROOT = test_media_root()
+        return c
 
     def teardown(client):
         teardown_test_environment()
         from django.db import connection
         connection.creation.destroy_test_db(old_name, verbosity=False)
+        import shutil
+        if cleanup_media() and settings.MEDIA_ROOT != client.orig_media_root:
+            shutil.rmtree(settings.MEDIA_ROOT)
 
     return request.cached_setup(setup, teardown, "session")
 
