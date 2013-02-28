@@ -8,7 +8,10 @@ from django.test.utils import setup_test_environment, teardown_test_environment
 from django.core.management import call_command
 from django.core import mail
 
-def pytest_funcarg__django_client(request):
+import pytest
+
+@pytest.fixture
+def django_client(request):
     """
         Setup / destroy testing database.
         Additionally, set the MEDIA_ROOT to the TEST_MEDIA_ROOT and clean up
@@ -48,7 +51,8 @@ def pytest_funcarg__django_client(request):
 
     return request.cached_setup(setup, teardown, "session")
 
-def pytest_funcarg__client(request):
+@pytest.fixture
+def client(request):
     """ as django_client, but also flushes the database """
     def setup():
         return request.getfuncargvalue('django_client')
