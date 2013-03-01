@@ -47,7 +47,10 @@ def django_client(request):
         connection.creation.destroy_test_db(old_name, verbosity=False)
         import shutil
         if cleanup_media() and settings.MEDIA_ROOT != client.orig_media_root:
-            shutil.rmtree(settings.MEDIA_ROOT)
+            try:
+                shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
+            except OSError:
+                pass
 
     return request.cached_setup(setup, teardown, "session")
 
