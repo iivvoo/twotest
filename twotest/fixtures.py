@@ -35,7 +35,13 @@ def django_client(request):
         if not hasattr(settings, 'DEBUG'):
             settings.DEBUG = False
         from django.db import connection
+        try:
+            from south.management.commands import patch_for_test_db_setup
+            patch_for_test_db_setup()
+        except ImportError:
+            pass
         connection.creation.create_test_db(verbosity=0, autoclobber=True)
+        # call_command("migrate", database=connection.alias)
         c = Client()
         c.orig_media_root = settings.MEDIA_ROOT
         settings.MEDIA_ROOT = test_media_root()
