@@ -30,8 +30,9 @@ class QuickDjangoTest(object):
     )
     WEBMASTER_VERIFICATION = {}
 
-    def __init__(self, apps, *args, **kwargs):
-        self.apps = apps
+    def __init__(self, apps, installed_apps=(), *args, **kwargs):
+        self.test_apps = apps
+        self.installed_apps = installed_apps
         self.settings = kwargs
         self._tests()
 
@@ -47,8 +48,7 @@ class QuickDjangoTest(object):
                     'NAME': 'memory:///',
                 }
             },
-            INSTALLED_APPS = self.INSTALLED_APPS + tuple(self.apps),
-            # ROOT_URLCONF = 'test_project.urls',
+            INSTALLED_APPS = self.INSTALLED_APPS + tuple(self.installed_apps),
             TEMPLATE_DIRS = (
                 # './test_project/templates/',
             ),
@@ -61,9 +61,10 @@ class QuickDjangoTest(object):
             **default_settings
         )
         import pytest
-        failures = pytest.main(["--tb=short", "wheelcms_axle"])
-        if failures:
-            sys.exit(failures)
+        for app in self.test_apps:
+            failures = pytest.main(["--tb=short", app])
+            if failures:
+                sys.exit(failures)
 
 
 if __name__ == '__main__':
