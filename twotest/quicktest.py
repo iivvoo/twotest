@@ -32,22 +32,19 @@ class QuickDjangoTest(object):
 
     def __init__(self, apps, *args, **kwargs):
         self.apps = apps
+        self.settings = kwargs
         self._tests()
 
     def _tests(self):
         """
         Fire up the Django test suite developed for version 1.2
         """
-        settings.configure(
+        default_settings = dict(
             DEBUG = True,
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': os.path.join(self.DIRNAME, 'database.db'),
-                    'USER': '',
-                    'PASSWORD': '',
-                    'HOST': '',
-                    'PORT': '',
+                    'NAME': 'memory:///',
                 }
             },
             INSTALLED_APPS = self.INSTALLED_APPS + tuple(self.apps),
@@ -55,9 +52,16 @@ class QuickDjangoTest(object):
             TEMPLATE_DIRS = (
                 # './test_project/templates/',
             ),
+            STATIC_URL='/static',
+            SITE_ID=1,
+            ROOT_URLCONF="twotest.emptyurls",
         )
-        from django.test.simple import DjangoTestSuiteRunner
-        failures = DjangoTestSuiteRunner().run_tests(self.apps, verbosity=1)
+        default_settings.update(self.settings)
+        settings.configure(
+            **default_settings
+        )
+        import pytest
+        failures = pytest.main(["--tb=short", "wheelcms_axle"])
         if failures:
             sys.exit(failures)
 
