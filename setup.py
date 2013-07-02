@@ -6,8 +6,7 @@ version = '0.9'
 setup(name='twotest',
       version=version,
       description="It takes Two to Django. py.test support for Django",
-      long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+      long_description=open("README.txt").read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Programming Language :: Python",
