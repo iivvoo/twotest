@@ -1,3 +1,8 @@
+class TestSessionStore(dict):
+    """
+        This will allow attributes to be set; e.g. .modified
+    """
+
 def create_request(method, *a, **b):
     """ setup a request with an anonymous user """
     from django.contrib.auth.models import AnonymousUser
@@ -12,5 +17,5 @@ def create_request(method, *a, **b):
     elif method == "DELETE":
         request = RequestFactory().delete(*a, **b)
     request.user = AnonymousUser()
-    request.session = {}
+    request.session = TestSessionStore()
     return request
