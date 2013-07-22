@@ -5,7 +5,6 @@ Slightly modified by Nicolas Kuttler.
 
 import os
 import sys
-import argparse
 
 from django.conf import settings
 
@@ -76,6 +75,7 @@ if __name__ == '__main__':
         $ python quicktest.py app1 app2
 
     """
+    import argparse
     parser = argparse.ArgumentParser(
         usage="[args]",
         description="Run Django tests on the provided applications."
