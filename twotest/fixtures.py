@@ -35,11 +35,12 @@ def django_client(request):
         if not hasattr(settings, 'DEBUG'):
             settings.DEBUG = False
         from django.db import connection
-        try:
-            from south.management.commands import patch_for_test_db_setup
-            patch_for_test_db_setup()
-        except ImportError:
-            pass
+        if 'south' in settings.INSTALLED_APPS:
+            try:
+                from south.management.commands import patch_for_test_db_setup
+                patch_for_test_db_setup()
+            except ImportError:
+                pass
         connection.creation.create_test_db(verbosity=0, autoclobber=True)
         # call_command("migrate", database=connection.alias)
         c = Client()
