@@ -27,9 +27,6 @@ def django_client(request):
     def test_media_root():
         return getattr(settings, "TEST_MEDIA_ROOT", settings.MEDIA_ROOT)
 
-    def cleanup_media():
-        return getattr(settings, "CLEANUP_MEDIA", False)
-
     def setup():
         setup_test_environment()
         if not hasattr(settings, 'DEBUG'):
@@ -52,24 +49,27 @@ def django_client(request):
         teardown_test_environment()
         from django.db import connection
         connection.creation.destroy_test_db(old_name, verbosity=False)
-        import shutil
-        if cleanup_media() and settings.MEDIA_ROOT != client.orig_media_root:
-            try:
-                shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
-            except OSError:
-                pass
 
     return request.cached_setup(setup, teardown, "session")
 
 @pytest.fixture
 def client(request):
     """ as django_client, but also flushes the database """
+    def cleanup_media():
+        return getattr(settings, "CLEANUP_MEDIA", False)
+
     def setup():
         return request.getfuncargvalue('django_client')
 
     def teardown(client):
         call_command('flush', verbosity=0, interactive=False)
         mail.outbox = []
+        import shutil
+        if cleanup_media() and settings.MEDIA_ROOT != client.orig_media_root:
+            try:
+                shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
+            except OSError:
+                pass
 
     return request.cached_setup(setup, teardown, "function")
 
