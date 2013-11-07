@@ -51,7 +51,7 @@ class Command(BaseCommand):
             opts.append("--pastebin=all")
         if not b.get('functional') and not keyword_specified:
             opts.append("-k")
-            opts.append("-functional_")
+            opts.append("not functional_")
 
         if b.get('coverage'):
             coverage = True
