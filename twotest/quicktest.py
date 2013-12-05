@@ -5,6 +5,7 @@ Slightly modified by Nicolas Kuttler.
 
 import os
 import sys
+import coverage
 
 from django.conf import settings
 
@@ -61,7 +62,11 @@ class QuickDjangoTest(object):
         )
         import pytest
         for app in self.test_apps:
+            cov = coverage.coverage(source=[app], config_file='')
+            cov.start()
             failures = pytest.main(["--tb=short", app])
+            cov.stop()
+            cov.report()
             if failures:
                 sys.exit(failures)
 

@@ -23,6 +23,7 @@ setup(name='twotest',
       install_requires=[
           'setuptools',
           'pytest',
+          'coverage',
       ],
       entry_points={
       },
