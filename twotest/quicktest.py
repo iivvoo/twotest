@@ -52,7 +52,7 @@ class QuickDjangoTest(object):
             TEMPLATE_DIRS = (
                 # './test_project/templates/',
             ),
-            STATIC_URL='/static',
+            STATIC_URL='/static/',
             SITE_ID=1,
             ROOT_URLCONF="twotest.emptyurls",
         )
