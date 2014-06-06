@@ -30,7 +30,8 @@ class QuickDjangoTest(object):
     )
     WEBMASTER_VERIFICATION = {}
 
-    def __init__(self, apps, installed_apps=(), *args, **kwargs):
+    def __init__(self, pytestargs=(), apps=(), installed_apps=(), *args, **kwargs):
+        self.args = pytestargs
         self.test_apps = apps
         self.installed_apps = installed_apps
         self.settings = kwargs
@@ -64,7 +65,7 @@ class QuickDjangoTest(object):
         for app in self.test_apps:
             #cov = coverage.coverage(source=[app], config_file='')
             #cov.start()
-            failures = pytest.main(["--tb=short", app])
+            failures = pytest.main(["--tb=short"] + list(self.args) + [app])
             #cov.stop()
             #cov.report()
             if failures:
