@@ -1,3 +1,5 @@
+import mock
+
 class TestSessionStore(dict):
     """
         This will allow attributes to be set; e.g. .modified
@@ -18,4 +20,5 @@ def create_request(method, *a, **b):
         request = RequestFactory().delete(*a, **b)
     request.user = AnonymousUser()
     request.session = TestSessionStore()
+    request._messages = mock.Mock()
     return request
