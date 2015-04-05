@@ -21,4 +21,5 @@ def create_request(method, *a, **b):
     request.user = AnonymousUser()
     request.session = TestSessionStore()
     request._messages = mock.Mock()
+    request._messages.__iter__ = mock.Mock(return_value=iter([]))
     return request
